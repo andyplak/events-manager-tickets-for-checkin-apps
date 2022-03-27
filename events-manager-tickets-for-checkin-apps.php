@@ -13,14 +13,14 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-    die;
+	die;
 }
 
 function em_checkin_init() {
 
-    if( is_admin() ) {
-        require plugin_dir_path( __FILE__ ) . 'src/class-ticket-generator.php';
-        new TicketGenerator();
-    }
+	if( is_admin() ) {
+		require plugin_dir_path( __FILE__ ) . 'src/class-ticket-generator.php';
+		new TicketGenerator();
+	}
 }
 add_action( 'plugins_loaded', 'em_checkin_init', 20 );
