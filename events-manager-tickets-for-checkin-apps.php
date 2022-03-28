@@ -20,7 +20,9 @@ function em_checkin_init() {
 
 	if( is_admin() ) {
 		require plugin_dir_path( __FILE__ ) . 'src/class-ticket-generator.php';
+		require plugin_dir_path( __FILE__ ) . 'src/class-bookings-exporter.php';
 		new TicketGenerator();
+		new BookingsExporter();
 	}
 }
 add_action( 'plugins_loaded', 'em_checkin_init', 20 );
