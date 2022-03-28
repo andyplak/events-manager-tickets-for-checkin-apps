@@ -84,7 +84,7 @@ class TicketGenerator {
 					}
 				}
 
-
+				// Refactor to have confirmation screen?
 				// Include step template
 				// Sample message, list of users to be emailed
 				// Hidden form for step 3
@@ -104,7 +104,7 @@ class TicketGenerator {
 
 					$sent = $EM_Mailer->send( $subject, $body, $email );
 					$notice_class = $sent ? 'notice-success' : 'notice-error';
-					echo '<div class="notice '.$notice_class.'">'.$email.'</li>';
+					echo '<div class="notice '.$notice_class.'">'.$email.'</div>';
 				}
 				echo '</ul>';
 
