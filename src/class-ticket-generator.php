@@ -30,6 +30,7 @@ class TicketGenerator {
 				// sent date
 
 
+
 		if( isset( $_POST['submit'] )) {
 			check_admin_referer( 'email-tickets-'.get_current_user_id(), 'events-manager-checkin-tickets' );
 
@@ -37,65 +38,79 @@ class TicketGenerator {
 				$errors[] = __('Please select an event', 'events-manager-checkin-tickets');
 			}
 
+			if( empty( $_POST['subject'] ) ) {
+				$errors[] = __('Please add the email subject', 'events-manager-checkin-tickets');
+			}
+
 			if( !empty( $_POST['purchased_since'] ) ) {
 				try {
-					$date = new DateTime( '2020-13-32' );// $_POST['purchased_since'] );
+					$date = new DateTime( $_POST['purchased_since'] );
 				} catch ( exception $e ) {
 					$errors[] = __('Please enter a valid date', 'events-manager-checkin-tickets');
 				}
 			}
 
-
 			if( empty( $errors ) ) {
-
-				#echo '<pre>';var_dump( $_REQUEST );echo '</pre>';
 
 				// Look up all confirmed bookings
 				$event    = new EM_Event( absint( $_POST['event_id'] ) );
 				$bookings = new EM_Bookings( $event );
-				$tickets  = [];
+				$person_tickets  = [];
 
 				foreach( $bookings->get_bookings() as $booking ) {
 
 					// Get email of user who booked
 					$person = $booking->get_person();
-					#echo '<pre>';var_dump( $person );echo '</pre><hr />';
 
-					echo '<pre>';var_dump( $booking );echo '</pre><hr />';
 					foreach( $booking->get_tickets_bookings() as $ticket_booking ) {
-						echo '<pre>';var_dump( $ticket_booking );echo '</pre>';
 
 						$ticket = $ticket_booking->get_ticket();
 
 						for($i = 1; $i <= $ticket_booking->ticket_booking_spaces; $i++ ) {
 
-							$qr_string = $booking->booking_id . '_' . $ticket->ticket_id . '_' .$i;
+							$qr_string = $booking->booking_id . '-' . $ticket->ticket_id . '-' .$i;
 							if( $_POST['append_email_qr'] ) {
 								$qr_string.= ' '.$person->user_email;
 							}
 
-							$tickets[ $person->user_email ][] = [
+							$person_tickets[ $person->user_email ][] = [
 								'qr_str' => $qr_string,
 								'email'  => $person->user_email,
 								'name'   => $person->get_name(),
 								'ticket' => $ticket->ticket_name,
-								'date'   => $booking->date()->format()
+								'date'   => $booking->date()->format('d/m/Y \a\t H:i')
 							];
 						}
 					}
-					echo '<hr />';
 				}
 
-				echo '<pre>';var_dump( $tickets );echo '</pre>';
 
 				// Include step template
 				// Sample message, list of users to be emailed
 				// Hidden form for step 3
-				//return;
+
+				global $EM_Mailer;
+				echo '<p>'.__('Sending emails:', 'events-manager-checkin-tickets').'</p>';
+
+				foreach( $person_tickets as $email => $tickets ) {
+					$user    = get_user_by( 'email', $email );
+					$subject = $_POST['subject'];
+					$message = $_POST['message'];
+
+					ob_start();
+					include 'templates/email-body.php';
+					$body = ob_get_contents();
+					ob_end_clean();
+
+					$sent = $EM_Mailer->send( $subject, $body, $email );
+					$notice_class = $sent ? 'notice-success' : 'notice-error';
+					echo '<div class="notice '.$notice_class.'">'.$email.'</li>';
+				}
+				echo '</ul>';
+
+				return;
 			}
-
 		}
-
 
 		include 'templates/email-tickets-form.php';
 	}

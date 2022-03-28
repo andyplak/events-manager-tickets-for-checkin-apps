@@ -17,7 +17,7 @@
 				<tr>
 					<th><label for="event_id"><?php _e('Event', 'events-manager-checkin-tickets' ) ?></label></th>
 					<td>
-						<select name="event_id" class="regular-text">
+						<select name="event_id" class="regular-text" required>
 							<option value=""><?php _e('Select Event', 'events-manager-checkin-tickets' ) ?></option>
 							<?php foreach( EM_Events::get() as $event ) : ?>
 								<option value="<?php echo $event->event_id ?>"><?php echo $event->event_name ?></option>
@@ -62,6 +62,10 @@
 					</td>
 				</tr>
 				-->
+				<tr>
+					<th><label for="subject"><?php _e('Email subject', 'events-manager-checkin-tickets' ) ?></label></th>
+					<td><input type="text" name="subject" class="regular-text" required /></td>
+				</tr>
 				<tr>
 					<th><label for="message"><?php _e('Email message', 'events-manager-checkin-tickets' ) ?></label></th>
 					<td><textarea name="message" class="regular-text"></textarea></td>
