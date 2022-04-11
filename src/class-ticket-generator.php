@@ -38,10 +38,6 @@ class TicketGenerator {
 				$errors[] = __('Please select an event', 'events-manager-checkin-tickets');
 			}
 
-			if( empty( $_POST['subject'] ) ) {
-				$errors[] = __('Please add the email subject', 'events-manager-checkin-tickets');
-			}
-
 			if( !empty( $_POST['purchased_since'] ) ) {
 				try {
 					$date = new DateTime( $_POST['purchased_since'] );
@@ -97,6 +93,12 @@ class TicketGenerator {
 					$subject = $_POST['subject'];
 					$message = $_POST['message'];
 					$mpdf    = new \Mpdf\Mpdf(['debug' => true]);
+
+					if( !$subject ) {
+						$subject = strip_tags( $event->event_name );
+						$subject.= ' '.__('for', 'events-manager-checkin-tickets').' ';
+						$subject.= $user->first_name;
+					}
 
 					ob_start();
 					include 'templates/email-body.php';

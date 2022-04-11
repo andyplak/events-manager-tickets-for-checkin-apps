@@ -64,7 +64,10 @@
 				-->
 				<tr>
 					<th><label for="subject"><?php _e('Email subject', 'events-manager-checkin-tickets' ) ?></label></th>
-					<td><input type="text" name="subject" class="regular-text" required /></td>
+					<td>
+						<input type="text" name="subject" class="regular-text" /><br />
+						<em><?php _e('Leave blank for the default  {event-name} tickets for {firstname}.', 'events-manager-checkin-tickets' ) ?></em>
+					</td>
 				</tr>
 				<tr>
 					<th><label for="message"><?php _e('Email message', 'events-manager-checkin-tickets' ) ?></label></th>
