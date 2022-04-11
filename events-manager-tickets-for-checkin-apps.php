@@ -19,6 +19,7 @@ if ( ! defined( 'WPINC' ) ) {
 function em_checkin_init() {
 
 	if( is_admin() ) {
+		require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 		require plugin_dir_path( __FILE__ ) . 'src/class-ticket-generator.php';
 		require plugin_dir_path( __FILE__ ) . 'src/class-bookings-exporter.php';
 		new TicketGenerator();
