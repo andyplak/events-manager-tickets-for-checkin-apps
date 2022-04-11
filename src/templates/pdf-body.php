@@ -1,4 +1,4 @@
-<h2>Your <?php echo str_replace('<br>', ' ', $event->event_name ) ?></h2>
+<h2>Your <?php echo strip_tags( $event->event_name ) ?></h2>
 
 <?php foreach( $tickets as $ticket ) : ?>
 
