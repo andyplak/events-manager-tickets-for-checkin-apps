@@ -89,20 +89,46 @@ class TicketGenerator {
 				// Sample message, list of users to be emailed
 				// Hidden form for step 3
 
-				global $EM_Mailer;
+				#global $EM_Mailer;
 				echo '<p>'.__('Sending emails:', 'events-manager-checkin-tickets').'</p>';
 
 				foreach( $person_tickets as $email => $tickets ) {
 					$user    = get_user_by( 'email', $email );
 					$subject = $_POST['subject'];
 					$message = $_POST['message'];
+					$mpdf    = new \Mpdf\Mpdf(['debug' => true]);
 
 					ob_start();
 					include 'templates/email-body.php';
 					$body = ob_get_contents();
 					ob_end_clean();
 
-					$sent = $EM_Mailer->send( $subject, $body, $email );
+					ob_start();
+					include 'templates/pdf-body.php';
+					$content = ob_get_contents();
+					ob_end_clean();
+
+					$mpdf->WriteHTML($content);
+					#$mpdf->Output();
+
+					$pdf_filename = $event->event_slug . '.pdf';
+					$pdf_content  = $mpdf->output($pdf_filename, \Mpdf\Output\Destination::STRING_RETURN );
+					$pdf_path     = EM_Mailer::add_email_attachment( $pdf_filename, $pdf_content );
+
+					// EM Mailer in compatible with Post SMTP plugin
+					#$attachment   = [
+					#	'name'   => 'EventTickets.pdf',
+					#	'type'   => 'application/pdf',
+					#	'path'   => $pdf_path,
+					#	'delete' => true
+					#];
+					#
+					#$sent = $EM_Mailer->send( $subject, $body, $email, [ $attachment ] );
+
+					// Use WP Mail instead
+					$headers = ['Content-Type: text/html; charset=UTF-8'];
+					$sent = wp_mail( $email, $subject, $body, $headers, [ $pdf_path ] );
+
 					$notice_class = $sent ? 'notice-success' : 'notice-error';
 					echo '<div class="notice '.$notice_class.'">'.$email.'</div>';
 				}
