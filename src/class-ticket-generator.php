@@ -69,6 +69,11 @@ class TicketGenerator {
 
 				foreach( $bookings->get_bookings() as $booking ) {
 
+					if( isset( $booking->booking_meta['tickets_emailed'] ) ) {
+						// Do not send if already sent
+						continue;
+					}
+
 					// Get email of user who booked
 					$person = $booking->get_person();
 
@@ -88,7 +93,8 @@ class TicketGenerator {
 								'email'  => $person->user_email,
 								'name'   => $person->get_name(),
 								'ticket' => $ticket->ticket_name,
-								'date'   => $booking->date()->format('d/m/Y \a\t H:i')
+								'date'   => $booking->date()->format('d/m/Y \a\t H:i'),
+								'bk_id'  => $ticket_booking->booking_id
 							];
 						}
 					}
@@ -105,6 +111,7 @@ class TicketGenerator {
 				add_filter( 'em_event_output_placeholder', [$this, 'onEmEventOutputPlaceholder'], 10, 5 );
 
 				foreach( $person_tickets as $email => $tickets ) {
+
 					$user    = get_user_by( 'email', $email );
 					$subject = $_POST['subject'];
 					$mpdf    = new \Mpdf\Mpdf(['debug' => true]);
@@ -147,6 +154,21 @@ class TicketGenerator {
 
 					$notice_class = $sent ? 'notice-success' : 'notice-error';
 					echo '<div class="notice '.$notice_class.'">'.$email.'</div>';
+
+					if( $sent ) {
+						// Log time sent against the original booking
+						$bookings_email_sent = [];
+
+						foreach( $tickets as $ticket ) {
+							$bookings_email_sent[] = $ticket['bk_id'];
+						}
+						$bookings_email_sent = array_unique( $bookings_email_sent, SORT_NUMERIC );
+
+						foreach( $bookings_email_sent as $booking_id ) {
+							$em_booking = new EM_Booking( $booking_id );
+							$em_booking->update_meta( 'tickets_emailed', date('U') );
+						}
+					}
 				}
 
 				remove_filter( 'em_event_output_placeholder', [$this, 'onEmEventOutputPlaceholder'], 10, 5 );
