@@ -163,6 +163,14 @@ class TicketGenerator {
 					$notice_class = $sent ? 'notice-success' : 'notice-error';
 					echo '<div class="notice '.$notice_class.'">'.$email.'</div>';
 
+
+
+					// Testing only
+					echo '<div class="notice notice-warning">Aborting... Quirky Testing, send one at a time.</div>';
+					break;
+
+
+
 					if( $sent ) {
 						// Log time sent against the original booking
 						$bookings_email_sent = [];
@@ -177,13 +185,6 @@ class TicketGenerator {
 							$em_booking->update_meta( 'tickets_emailed', date('U') );
 						}
 					}
-
-
-					// Testing only
-					echo '<div class="notice notice-warning">Aborting... Quirky Testing, send one at a time.</div>';
-					break;
-
-
 				}
 
 				remove_filter( 'em_event_output_placeholder', [$this, 'onEmEventOutputPlaceholder'], 10, 5 );
