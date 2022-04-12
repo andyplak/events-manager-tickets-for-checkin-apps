@@ -20,7 +20,12 @@
 						<select name="event_id" class="regular-text" required>
 							<option value=""><?php _e('Select Event', 'events-manager-checkin-tickets' ) ?></option>
 							<?php foreach( EM_Events::get() as $event ) : ?>
-								<option value="<?php echo $event->event_id ?>"><?php echo $event->event_name ?></option>
+								<option
+									value="<?php echo $event->event_id ?>"
+									<?php echo ( isset( $_POST['event_id'] ) && $_POST['event_id'] == $event->event_id ? 'selected' : '' ) ?>
+								>
+									<?php echo $event->event_name ?>
+								</option>
 							<?php endforeach; ?>
 						</select>
 					</td>
@@ -68,10 +73,6 @@
 						<input type="text" name="subject" class="regular-text" /><br />
 						<em><?php _e('Leave blank for the default  {event-name} tickets for {firstname}.', 'events-manager-checkin-tickets' ) ?></em>
 					</td>
-				</tr>
-				<tr>
-					<th><label for="message"><?php _e('Email message', 'events-manager-checkin-tickets' ) ?></label></th>
-					<td><textarea name="message" class="regular-text"></textarea></td>
 				</tr>
 				<tr>
 					<th></th>

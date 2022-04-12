@@ -2,8 +2,12 @@
 
 class TicketGenerator {
 
+	private $current_tickets;
+
 	public function __construct() {
-		add_action('admin_menu', [$this, 'onAdminMenu'], 90 );
+		add_action( 'admin_menu', [$this, 'onAdminMenu'], 90 );
+		add_action( 'add_meta_boxes_'.EM_POST_TYPE_EVENT, [$this, 'ticketEmailCopyMetaBox'], 11 );
+		add_action( 'save_post', [$this, 'saveTicketEmailCopy'] );
 	}
 
 	public function onAdminMenu() {
@@ -46,10 +50,20 @@ class TicketGenerator {
 				}
 			}
 
+			$event = new EM_Event( absint( $_POST['event_id'] ) );
+
+			if( is_null( $event->ID ) ) {
+				$errors[] = __('Event not found', 'events-manager-checkin-tickets');
+			}
+
+			$message = get_post_meta( $event->post_id, '_tickets_email_copy', true);
+			if( !$message ) {
+				$errors[] = __('Ticket email message not configured. Please edit the event to set this up.', 'events-manager-checkin-tickets');
+			}
+
 			if( empty( $errors ) ) {
 
 				// Look up all confirmed bookings
-				$event    = new EM_Event( absint( $_POST['event_id'] ) );
 				$bookings = new EM_Bookings( $event );
 				$person_tickets  = [];
 
@@ -88,10 +102,11 @@ class TicketGenerator {
 				#global $EM_Mailer;
 				echo '<p>'.__('Sending emails:', 'events-manager-checkin-tickets').'</p>';
 
+				add_filter( 'em_event_output_placeholder', [$this, 'onEmEventOutputPlaceholder'], 10, 5 );
+
 				foreach( $person_tickets as $email => $tickets ) {
 					$user    = get_user_by( 'email', $email );
 					$subject = $_POST['subject'];
-					$message = $_POST['message'];
 					$mpdf    = new \Mpdf\Mpdf(['debug' => true]);
 
 					if( !$subject ) {
@@ -100,10 +115,9 @@ class TicketGenerator {
 						$subject.= $user->first_name;
 					}
 
-					ob_start();
-					include 'templates/email-body.php';
-					$body = ob_get_contents();
-					ob_end_clean();
+					// Store tickets for use in event->output filters
+					$this->current_tickets = $tickets;
+					$body = nl2br( $event->output( $message ) );
 
 					ob_start();
 					include 'templates/pdf-body.php';
@@ -134,7 +148,8 @@ class TicketGenerator {
 					$notice_class = $sent ? 'notice-success' : 'notice-error';
 					echo '<div class="notice '.$notice_class.'">'.$email.'</div>';
 				}
-				echo '</ul>';
+
+				remove_filter( 'em_event_output_placeholder', [$this, 'onEmEventOutputPlaceholder'], 10, 5 );
 
 				return;
 			}
@@ -142,4 +157,66 @@ class TicketGenerator {
 
 		include 'templates/email-tickets-form.php';
 	}
+
+	public function ticketEmailCopyMetaBox( $post ) {
+		global $EM_Event;
+
+		if( get_option('dbem_rsvp_enabled') && !empty($EM_Event->event_id) && $EM_Event->event_rsvp ) {
+			add_meta_box(
+				'em-event-tickets-email',
+				__('Tickets Email', 'events-manager-checkin-tickets'),
+				[$this ,'metaBoxTicketEmail'],
+				EM_POST_TYPE_EVENT,
+				'normal',
+				'default'
+			);
+		}
+	}
+
+	public function metaBoxTicketEmail() {
+		global $post;
+
+		include 'templates/ticket-email-metabox.php';
+	}
+
+	public function saveTicketEmailCopy() {
+		global $post;
+
+		if(isset($_POST['tickets_email_copy'])){
+			update_post_meta( $post->ID, '_tickets_email_copy', $_POST['tickets_email_copy'] );
+		}
+	}
+
+	public function onEmEventOutputPlaceholder( $replace, $event, $full_result, $target, $placeholder_atts ) {
+
+		switch( $full_result ) {
+			case '#_CONTACTFIRSTNAME' :
+				$replace = $event->get_contact()->first_name;
+				break;
+			case '#_TICKETBREAKDOWN' :
+				if( $target == 'html' ) {
+					$replace = '<ul>';
+					foreach( $this->current_tickets as $ticket ) {
+						$replace .= '<li>'.$ticket['ticket'].'</li>';
+					}
+					$replace .= '</ul>';
+				}else{
+					// to do...
+					// open source so feel free
+				}
+				break;
+			case '#_TICKETQRCODES' :
+				if( $target == 'html' ) {
+					$replace = '';
+					foreach( $this->current_tickets as $ticket ) {
+						$replace .= '<hr /><p><strong>' . $ticket['ticket'] . '</strong></p>';
+						$replace .= '<img src="' . plugins_url('events-manager-tickets-for-checkin-apps/src/qrcode.php?s=qrl&sf=10&d='.$ticket['qr_str'] ) . '" />';
+					}
+				}
+				break;
+		}
+
+		return $replace;
+	}
+
 }
