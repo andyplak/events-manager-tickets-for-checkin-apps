@@ -75,6 +75,23 @@
 					</td>
 				</tr>
 				<tr>
+					<th><label for="batch_qty"><?php _e('Batch Quantity', 'events-manager-checkin-tickets' ) ?></label></th>
+					<td>
+						<select name="batch_qty" class="regular-text" required>
+							<?php foreach( [10,25,50,75,100] as $qty ) : ?>
+								<option
+									value="<?php echo $qty ?>"
+									<?php echo ( isset( $_POST['batch_qty'] ) && $_POST['batch_qty'] == $qty ? 'selected' : '' ) ?>
+								>
+									<?php echo $qty ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+						<br />
+						<em><?php _e('To avoid hogging server resources, hitting API limits etc, run the email generation in batches.', 'events-manager-checkin-tickets' ) ?></em>
+					</td>
+				</tr>
+				<tr>
 					<th></th>
 					<td><input type="submit" name="submit" class="button button-primary" value="Submit" /></td>
 				</tr>

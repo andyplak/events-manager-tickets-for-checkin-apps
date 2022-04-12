@@ -65,7 +65,8 @@ class TicketGenerator {
 
 				// Look up all confirmed bookings
 				$bookings = new EM_Bookings( $event );
-				$person_tickets  = [];
+				$person_tickets = [];
+				$batch_qty = absint( $_POST['batch_qty'] );
 
 				foreach( $bookings->get_bookings() as $booking ) {
 
@@ -109,6 +110,8 @@ class TicketGenerator {
 				echo '<p>'.__('Sending emails:', 'events-manager-checkin-tickets').'</p>';
 
 				add_filter( 'em_event_output_placeholder', [$this, 'onEmEventOutputPlaceholder'], 10, 5 );
+
+				$i = 0;
 
 				foreach( $person_tickets as $email => $tickets ) {
 
@@ -184,6 +187,11 @@ class TicketGenerator {
 							$em_booking = new EM_Booking( $booking_id );
 							$em_booking->update_meta( 'tickets_emailed', date('U') );
 						}
+					}
+
+					$i++;
+					if( $i == $batch_qty ) {
+						break;
 					}
 				}
 
