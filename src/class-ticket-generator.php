@@ -125,7 +125,7 @@ class TicketGenerator {
 					// Store tickets for use in event->output filters
 					$this->current_tickets = $tickets;
 					$body = nl2br( $event->output( $message ) );
-
+echo $body;die;
 					ob_start();
 					include 'templates/pdf-body.php';
 					$content = ob_get_contents();
@@ -219,7 +219,7 @@ class TicketGenerator {
 				if( $target == 'html' ) {
 					$replace = '<ul>';
 					foreach( $this->current_tickets as $ticket ) {
-						$replace .= '<li>'.$ticket['ticket'].'</li>';
+						$replace .= '<li><strong>'.$ticket['ticket'].'</strong> ('.trim(str_replace( $ticket['email'], '', $ticket['qr_str'] )).')</li>';
 					}
 					$replace .= '</ul>';
 				}else{
