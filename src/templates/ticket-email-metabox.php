@@ -10,7 +10,7 @@
 </p>
 
 <ul>
-    <li>#_CONTACTFIRSTNAME</li>
+    <li>#_BOOKINGFIRSTNAME</li>
     <li>#_TICKETBREAKDOWN</li>
     <li>#_TICKETQRCODES</li>
 </ul>

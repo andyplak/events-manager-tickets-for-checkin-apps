@@ -220,8 +220,9 @@ class TicketGenerator {
 	public function onEmEventOutputPlaceholder( $replace, $event, $full_result, $target, $placeholder_atts ) {
 
 		switch( $full_result ) {
-			case '#_CONTACTFIRSTNAME' :
-				$replace = $event->get_contact()->first_name;
+			case '#_BOOKINGFIRSTNAME' :
+				$user = get_user_by('email', $this->current_tickets[0]['email'] );
+				$replace = $user->first_name;
 				break;
 			case '#_TICKETBREAKDOWN' :
 				if( $target == 'html' ) {
