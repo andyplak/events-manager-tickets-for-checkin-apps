@@ -127,7 +127,7 @@ class TicketGenerator {
 
 					// Store tickets for use in event->output filters
 					$this->current_tickets = $tickets;
-					$body = nl2br( $event->output( $message ) );
+					$body = $event->output( $message );
 
 					ob_start();
 					include 'templates/pdf-body.php';
@@ -236,14 +236,16 @@ class TicketGenerator {
 	public function onEmEventOutputPlaceholder( $replace, $event, $full_result, $target, $placeholder_atts ) {
 
 		switch( $full_result ) {
-			case '#_CONTACTFIRSTNAME' :
-				$replace = $event->get_contact()->first_name;
+			case '#_BOOKINGFIRSTNAME' :
+				$user = get_user_by('email', $this->current_tickets[0]['email'] );
+				$replace = $user->first_name;
 				break;
 			case '#_TICKETBREAKDOWN' :
 				if( $target == 'html' ) {
 					$replace = '<ul>';
 					foreach( $this->current_tickets as $ticket ) {
-						$replace .= '<li><strong>'.$ticket['ticket'].'</strong> ('.trim(str_replace( $ticket['email'], '', $ticket['qr_str'] )).')</li>';
+						$replace .= '<li><strong>'.$ticket['ticket'].'</strong><br />';
+						$replace .= 'Ticket ID: '.trim(str_replace( $ticket['email'], '', $ticket['qr_str'] )).'</li>';
 					}
 					$replace .= '</ul>';
 				}else{
