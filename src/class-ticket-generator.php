@@ -227,7 +227,8 @@ class TicketGenerator {
 				if( $target == 'html' ) {
 					$replace = '<ul>';
 					foreach( $this->current_tickets as $ticket ) {
-						$replace .= '<li><strong>'.$ticket['ticket'].'</strong> ('.trim(str_replace( $ticket['email'], '', $ticket['qr_str'] )).')</li>';
+						$replace .= '<li><strong>'.$ticket['ticket'].'</strong><br />';
+						$replace .= 'Ticket ID: '.trim(str_replace( $ticket['email'], '', $ticket['qr_str'] )).'</li>';
 					}
 					$replace .= '</ul>';
 				}else{
