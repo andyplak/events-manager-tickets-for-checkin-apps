@@ -127,7 +127,7 @@ class TicketGenerator {
 
 					// Store tickets for use in event->output filters
 					$this->current_tickets = $tickets;
-					$body = nl2br( $event->output( $message ) );
+					$body = $event->output( $message );
 
 					ob_start();
 					include 'templates/pdf-body.php';
