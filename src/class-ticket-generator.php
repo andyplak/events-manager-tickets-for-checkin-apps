@@ -125,7 +125,7 @@ class TicketGenerator {
 					// Store tickets for use in event->output filters
 					$this->current_tickets = $tickets;
 					$body = nl2br( $event->output( $message ) );
-echo $body;die;
+
 					ob_start();
 					include 'templates/pdf-body.php';
 					$content = ob_get_contents();
@@ -150,6 +150,14 @@ echo $body;die;
 
 					// Use WP Mail instead
 					$headers = ['Content-Type: text/html; charset=UTF-8'];
+
+
+
+					// Testing only
+					$email = 'sales@quirkycampers.co.uk';
+
+
+
 					$sent = wp_mail( $email, $subject, $body, $headers, [ $pdf_path ] );
 
 					$notice_class = $sent ? 'notice-success' : 'notice-error';
@@ -169,6 +177,13 @@ echo $body;die;
 							$em_booking->update_meta( 'tickets_emailed', date('U') );
 						}
 					}
+
+
+					// Testing only
+					echo '<div class="notice notice-warning">Aborting... Quirky Testing, send one at a time.</div>';
+					break;
+
+
 				}
 
 				remove_filter( 'em_event_output_placeholder', [$this, 'onEmEventOutputPlaceholder'], 10, 5 );
