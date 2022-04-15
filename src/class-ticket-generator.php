@@ -117,7 +117,7 @@ class TicketGenerator {
 
 					$user    = get_user_by( 'email', $email );
 					$subject = $_POST['subject'];
-					$mpdf    = new \Mpdf\Mpdf(['debug' => true]);
+					$mpdf    = new \Mpdf\Mpdf(['debug' => true]); // Debug true so we get a warning instead of an empty pdf in the case of issues
 
 					if( !$subject ) {
 						$subject = strip_tags( $event->event_name );
