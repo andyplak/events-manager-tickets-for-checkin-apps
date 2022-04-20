@@ -18,9 +18,10 @@ This plugin provides and interface between Events Manager and these check in app
 - Emails all users booked on an event a configurable message with event details with a PDF attachment with QR codes for each ticket.
 - Allows export of all ticket bookings for an event with the QR code text string ready for import into the mobile app's guest list.
 
-A couple of points to note:
+A few points to note:
 - This is a one way setup. The apps do not communicate back to Events Manager with check in info.
 - The ticket emails are not sent out at the time of booking. These are designed to be done on mass at a specific point in time
 and can be done in batches via the Events Manager interface or per booking via a specific link
+- You'll need to run a `composer install` after adding the plugin to pull in the dependencies.
 
 To date (April 2022), this has been extensivly tested with zkipster.
