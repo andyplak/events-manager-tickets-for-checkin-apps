@@ -8,6 +8,7 @@ class TicketGenerator {
 		add_action( 'admin_menu', [$this, 'onAdminMenu'], 90 );
 		add_action( 'add_meta_boxes_'.EM_POST_TYPE_EVENT, [$this, 'ticketEmailCopyMetaBox'], 11 );
 		add_action( 'save_post', [$this, 'saveTicketEmailCopy'] );
+		add_action( 'em_bookings_single_metabox_footer', [$this, 'singleBookingSendTicketForm'] );
 	}
 
 	public function onAdminMenu() {
@@ -63,14 +64,24 @@ class TicketGenerator {
 
 			if( empty( $errors ) ) {
 
-				// Look up all confirmed bookings
-				$bookings = new EM_Bookings( $event );
 				$person_tickets = [];
-				$batch_qty = absint( $_POST['batch_qty'] );
+				$batch_qty = isset( $_POST['batch_qty'] ) ? absint( $_POST['batch_qty'] ) : 10;
+
+				if( isset( $_POST[ 'booking_id' ] ) ) {
+					$em_booking = new EM_Booking( $_POST[ 'booking_id' ] );
+					$bookings = new EM_Bookings();
+
+					if( $em_booking->booking_id ) {
+						$bookings->bookings = [ $em_booking ];
+					}
+				}else{
+					// Look up all confirmed bookings
+					$bookings = new EM_Bookings( $event );
+				}
 
 				foreach( $bookings->get_bookings() as $booking ) {
 
-					if( isset( $booking->booking_meta['tickets_emailed'] ) ) {
+					if( !isset( $_POST['force_send'] ) && isset( $booking->booking_meta['tickets_emailed'] ) ) {
 						// Do not send if already sent
 						continue;
 					}
@@ -207,6 +218,33 @@ class TicketGenerator {
 		global $post;
 
 		include 'templates/ticket-email-metabox.php';
+	}
+
+	public function singleBookingSendTicketForm( $em_booking ) {
+		?>
+		<div id="em-gateway-send-tickts" class="stuffbox">
+			<h3>
+				<?php _e('Send Tickets', 'events-manager-checkin-tickets'); ?>
+			</h3>
+			<div class="inside">
+				<p><?php _e('Send or resend check in tickets to the user for this booking', 'events-manager-checkin-tickets'); ?></p>
+
+				<form action="<?php echo admin_url( 'edit.php?post_type=event&page=events-email-tickets' ) ?>" method="POST">
+					<?php wp_nonce_field( 'email-tickets-'.get_current_user_id(), 'events-manager-checkin-tickets' ); ?>
+					<input type="hidden" name="event_id" value="<?php echo $em_booking->event_id ?>" />
+					<input type="hidden" name="booking_id" value="<?php echo $em_booking->booking_id ?>" />
+					<input type="hidden" name="force_send" value="1" />
+
+					<?php if( isset( $em_booking->booking_meta['tickets_emailed'] ) ) : ?>
+						<p><?php echo sprintf( __( 'Check in tickets emailed to the user for this booking on %s', 'events-manager-checkin-tickets'), date('d/m/Y H:i') ); ?>
+						<p><input type="submit" name="submit" class="button button-primary" value="<?php _e('Re-send Tickets', 'events-manager-checkin-tickets'); ?>" /></p>
+					<?php else: ?>
+						<p><input type="submit" name="submit" class="button button-primary" value="<?php _e('Send Tickets', 'events-manager-checkin-tickets'); ?>" /></p>
+					<?php endif; ?>
+				</form>
+			</div>
+		</div>
+		<?php
 	}
 
 	public function saveTicketEmailCopy() {
