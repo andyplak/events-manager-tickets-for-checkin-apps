@@ -4,7 +4,7 @@
  * Plugin Name: Events Manager Tickets for Check In Apps
  * Plugin URI: https://github.com/andyplak/events-manager-covid-bonds
  * Description: Email QR code tickets to users with bookings for events. For use with Check In Apps like Zkipster, RSVPify, GuestManager etc.
- * Version: 1.1
+ * Version: 1.2
  * Author: Andy Place
  * Author URI: http://www.andyplace.co.uk/
  * License: GPLv2 or later
