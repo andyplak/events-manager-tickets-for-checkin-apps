@@ -117,6 +117,14 @@ class TicketGenerator {
 				// Sample message, list of users to be emailed
 				// Hidden form for step 3
 
+
+				if( empty( $person_tickets ) ) {
+					$errors[] = __('No ticket bookings with found for search criteria.', 'events-manager-checkin-tickets');
+				}
+			}
+
+			if( empty( $errors ) ) {
+
 				#global $EM_Mailer;
 				echo '<p>'.__('Sending emails:', 'events-manager-checkin-tickets').'</p>';
 
