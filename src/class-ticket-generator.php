@@ -243,12 +243,27 @@ class TicketGenerator {
 					<input type="hidden" name="booking_id" value="<?php echo $em_booking->booking_id ?>" />
 					<input type="hidden" name="force_send" value="1" />
 
-					<?php if( isset( $em_booking->booking_meta['tickets_emailed'] ) ) : ?>
-						<p><?php echo sprintf( __( 'Check in tickets emailed to the user for this booking on %s', 'events-manager-checkin-tickets'), date('d/m/Y H:i') ); ?>
-						<p><input type="submit" name="submit" class="button button-primary" value="<?php _e('Re-send Tickets', 'events-manager-checkin-tickets'); ?>" /></p>
-					<?php else: ?>
-						<p><input type="submit" name="submit" class="button button-primary" value="<?php _e('Send Tickets', 'events-manager-checkin-tickets'); ?>" /></p>
-					<?php endif; ?>
+					<table class="form-table">
+						<tbody>
+							<tr>
+								<th><label for="subject"><?php _e('Email subject', 'events-manager-checkin-tickets' ) ?></label></th>
+								<td>
+									<input type="text" name="subject" class="regular-text" /><br />
+									<em><?php _e('Leave blank for the default  {event-name} tickets for {firstname}.', 'events-manager-checkin-tickets' ) ?></em>
+								</td>
+							</tr>
+							<tr>
+								<th></th>
+								<td>
+									<?php if( isset( $em_booking->booking_meta['tickets_emailed'] ) ) : ?>
+										<p><?php echo sprintf( __( 'Check in tickets emailed to the user for this booking on %s', 'events-manager-checkin-tickets'), date('d/m/Y H:i') ); ?>
+										<p><input type="submit" name="submit" class="button button-primary" value="<?php _e('Re-send Tickets', 'events-manager-checkin-tickets'); ?>" /></p>
+									<?php else: ?>
+										<p><input type="submit" name="submit" class="button button-primary" value="<?php _e('Send Tickets', 'events-manager-checkin-tickets'); ?>" /></p>
+									<?php endif; ?>
+								</td>
+						</tbody>
+					</table>
 				</form>
 			</div>
 		</div>
