@@ -7,72 +7,72 @@
  */
 class BookingsExporter {
 
-    private $ticket_space_counter = null;
+	private $ticket_space_counter = null;
 
 	public function __construct() {
-        add_action('init', [$this, 'before_em_init_actions'],10);
-        add_action('em_bookings_table_export_options', [$this, 'em_bookings_table_export_options']);
+		add_action('init', [$this, 'before_em_init_actions'],10);
+		add_action('em_bookings_table_export_options', [$this, 'em_bookings_table_export_options']);
 
-        add_filter('em_bookings_table_cols_tickets_template', [$this, 'em_bookings_table_cols_tickets_template']);
-        add_filter('em_bookings_table_rows_col_ticket_qr', [$this, 'em_bookings_table_rows_col_ticket_qr'], 10, 5);
+		add_filter('em_bookings_table_cols_tickets_template', [$this, 'em_bookings_table_cols_tickets_template']);
+		add_filter('em_bookings_table_rows_col_ticket_qr', [$this, 'em_bookings_table_rows_col_ticket_qr'], 10, 5);
 	}
 
-    /**
-     * Jump in before em_init_actions and hijack export if key fields are set
-     */
-    public function before_em_init_actions() {
-        if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_bookings_csv' && wp_verify_nonce($_REQUEST['_wpnonce'], 'export_bookings_csv')) {
-            if( isset( $_REQUEST['no_ticket_grouping'] ) && $_REQUEST['no_ticket_grouping'] ) {
-                $this->build_csv();
-            }
-        }
-    }
+	/**
+	 * Jump in before em_init_actions and hijack export if key fields are set
+	 */
+	public function before_em_init_actions() {
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_bookings_csv' && wp_verify_nonce($_REQUEST['_wpnonce'], 'export_bookings_csv')) {
+			if( isset( $_REQUEST['no_ticket_grouping'] ) && $_REQUEST['no_ticket_grouping'] ) {
+				$this->build_csv();
+			}
+		}
+	}
 
-    public function em_bookings_table_export_options() {
-        if( !get_option('dbem_bookings_tickets_single') ) {
-            ?>
-            <p>
-                <?php esc_html_e('Do not group tickets by type','events-manager-checkin-tickets')?> <input type="checkbox" name="no_ticket_grouping" value="1" />
-                <a href="#" title="<?php esc_attr_e('Add each ticket booking on a seperate row, irrespective of ticket type.','events-manager-checkin-tickets'); ?>">?</a>
-            </p>
-            <?php
-        }
-    }
+	public function em_bookings_table_export_options() {
+		if( !get_option('dbem_bookings_tickets_single') ) {
+			?>
+			<p>
+				<?php esc_html_e('Do not group tickets by type','events-manager-checkin-tickets')?> <input type="checkbox" name="no_ticket_grouping" value="1" />
+				<a href="#" title="<?php esc_attr_e('Add each ticket booking on a seperate row, irrespective of ticket type.','events-manager-checkin-tickets'); ?>">?</a>
+			</p>
+			<?php
+		}
+	}
 
-    public function em_bookings_table_cols_tickets_template( $cols ) {
-        $cols['ticket_qr'] = __('QR Code ID', 'events-manager-checkin-tickets');
-        return $cols;
-    }
+	public function em_bookings_table_cols_tickets_template( $cols ) {
+		$cols['ticket_qr'] = __('QR Code ID', 'events-manager-checkin-tickets');
+		return $cols;
+	}
 
-    /**
-     * Build QR code value (booking_id - ticket_id - space counter)
-     */
-    public function em_bookings_table_rows_col_ticket_qr($val, $EM_Booking, $EM_Bookings_Table, $format, $object) {
-        $val = $EM_Booking->booking_id;
+	/**
+	 * Build QR code value (booking_id - ticket_id - space counter)
+	 */
+	public function em_bookings_table_rows_col_ticket_qr($val, $EM_Booking, $EM_Bookings_Table, $format, $object) {
+		$val = $EM_Booking->booking_id;
 
-        if( get_class($object) == 'EM_Ticket_Booking' ){
+		if( get_class($object) == 'EM_Ticket_Booking' ){
 			$EM_Ticket_Booking = $object;
 			$EM_Ticket         = $EM_Ticket_Booking->get_ticket();
 
-            $val .= '-' . $EM_Ticket->ticket_id;
+			$val .= '-' . $EM_Ticket->ticket_id;
 
-            if( $this->ticket_space_counter ) {
-                $val .= '-' . $this->ticket_space_counter;
-            }
-        }
+			if( $this->ticket_space_counter ) {
+				$val .= '-' . $this->ticket_space_counter;
+			}
+		}
 
-        return $val;
-    }
+		return $val;
+	}
 
-    /**
-     * Prepares bookings for export and builds csv file
-     *
-     * build_csv is a modified version of the routing from em-actions.php but with changes to ensure every
-     * single ticket per booking is on its own row, irrespective of ticket type. No sutiable hooks to change just the row data
-     * so have lifted the code in it's entirity.
-     */
-    private function build_csv() {
-        if( !empty($_REQUEST['event_id']) ){
+	/**
+	 * Prepares bookings for export and builds csv file
+	 *
+	 * build_csv is a modified version of the routing from em-actions.php but with changes to ensure every
+	 * single ticket per booking is on its own row, irrespective of ticket type. No sutiable hooks to change just the row data
+	 * so have lifted the code in it's entirity.
+	 */
+	private function build_csv() {
+		if( !empty($_REQUEST['event_id']) ){
 			$EM_Event = em_get_event( absint($_REQUEST['event_id']) );
 		}
 		//sort out cols
@@ -110,10 +110,10 @@ class BookingsExporter {
 		$handle = fopen("php://output", "w");
 
 		$csv_headers = $EM_Bookings_Table->get_headers(true);
-        fputcsv($handle, $csv_headers, $delimiter);
+		fputcsv($handle, $csv_headers, $delimiter);
 
-        // Note the position of the booking spaces column header
-        $booking_spaces_pos = array_search( 'booking_spaces', array_keys( $csv_headers ) );
+		// Note the position of the booking spaces column header
+		$booking_spaces_pos = array_search( 'booking_spaces', array_keys( $csv_headers ) );
 
 		while( !empty($EM_Bookings->bookings) ){
 			foreach( $EM_Bookings->bookings as $EM_Booking ) { /* @var EM_Booking $EM_Booking */
@@ -121,16 +121,16 @@ class BookingsExporter {
 				if( $show_tickets ){
 					foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){ /* @var EM_Ticket_Booking $EM_Ticket_Booking */
 
-                        // Custom code to split ticket bookings
-                        for($i = 1; $i <= $EM_Ticket_Booking->ticket_booking_spaces; $i++ ) {
-                            $this->ticket_space_counter = $i;
-						    $row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
-                            if( $booking_spaces_pos ) {
-                                $row[ $booking_spaces_pos ] = 1;
-                            }
-						    fputcsv($handle, $row, $delimiter);
-                        }
-                        // End custom code
+						// Custom code to split ticket bookings
+						for($i = 1; $i <= $EM_Ticket_Booking->ticket_booking_spaces; $i++ ) {
+							$this->ticket_space_counter = $i;
+							$row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
+							if( $booking_spaces_pos ) {
+								$row[ $booking_spaces_pos ] = 1;
+							}
+							fputcsv($handle, $row, $delimiter);
+						}
+						// End custom code
 					}
 				}else{
 					$row = $EM_Bookings_Table->get_row_csv($EM_Booking);
@@ -143,6 +143,6 @@ class BookingsExporter {
 		}
 		fclose($handle);
 		exit();
-    }
+	}
 
 }
