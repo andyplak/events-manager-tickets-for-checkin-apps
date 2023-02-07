@@ -10,7 +10,7 @@ class BookingsExporter {
 	private $ticket_space_counter = null;
 
 	public function __construct() {
-		add_action('init', [$this, 'before_em_init_actions'],10);
+		add_action('em_csv_header_output', [$this, 'em_csv_header_output']);
 		add_action('em_bookings_table_export_options', [$this, 'em_bookings_table_export_options']);
 
 		add_filter('em_bookings_table_cols_tickets_template', [$this, 'em_bookings_table_cols_tickets_template']);
@@ -18,13 +18,11 @@ class BookingsExporter {
 	}
 
 	/**
-	 * Jump in before em_init_actions and hijack export if key fields are set
+	 * Take over CSV Export if no_ticket_grouping set.
 	 */
-	public function before_em_init_actions() {
-		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_bookings_csv' && wp_verify_nonce($_REQUEST['_wpnonce'], 'export_bookings_csv')) {
-			if( isset( $_REQUEST['no_ticket_grouping'] ) && $_REQUEST['no_ticket_grouping'] ) {
-				$this->build_csv();
-			}
+	public function em_csv_header_output() {
+		if( isset( $_REQUEST['no_ticket_grouping'] ) && $_REQUEST['no_ticket_grouping'] ) {
+			$this->build_csv();
 		}
 	}
 
@@ -50,7 +48,7 @@ class BookingsExporter {
 	public function em_bookings_table_rows_col_ticket_qr($val, $EM_Booking, $EM_Bookings_Table, $format, $object) {
 		$val = $EM_Booking->booking_id;
 
-		if( get_class($object) == 'EM_Ticket_Booking' ){
+		if( get_class($object) == 'EM_Ticket_Bookings' ){
 			$EM_Ticket_Booking = $object;
 			$EM_Ticket         = $EM_Ticket_Booking->get_ticket();
 
@@ -72,26 +70,20 @@ class BookingsExporter {
 	 * so have lifted the code in it's entirity.
 	 */
 	private function build_csv() {
+		global $EM_Event;
+
 		if( !empty($_REQUEST['event_id']) ){
 			$EM_Event = em_get_event( absint($_REQUEST['event_id']) );
 		}
-		//sort out cols
-		if( !empty($_REQUEST['cols']) && is_array($_REQUEST['cols']) ){
-			$cols = array();
-			foreach($_REQUEST['cols'] as $col => $active){
-				if( $active ){ $cols[] = $col; }
-			}
-			$_REQUEST['cols'] = $cols;
-		}
-		$_REQUEST['limit'] = 0;
 
 		//generate bookings export according to search request
 		$show_tickets = !empty($_REQUEST['show_tickets']);
 		$EM_Bookings_Table = new EM_Bookings_Table($show_tickets);
+
 		header("Content-Type: application/octet-stream; charset=utf-8");
 		$file_name = !empty($EM_Event->event_slug) ? $EM_Event->event_slug:get_bloginfo();
 		header("Content-Disposition: Attachment; filename=".sanitize_title($file_name)."-bookings-export.csv");
-		do_action('em_csv_header_output');
+
 		echo "\xEF\xBB\xBF"; // UTF-8 for MS Excel (a little hacky... but does the job)
 		if( !defined('EM_CSV_DISABLE_HEADERS') || !EM_CSV_DISABLE_HEADERS ){
 			if( !empty($_REQUEST['event_id']) ){
@@ -107,16 +99,16 @@ class BookingsExporter {
 		//Rows
 		$EM_Bookings_Table->limit = 150; //if you're having server memory issues, try messing with this number
 		$EM_Bookings = $EM_Bookings_Table->get_bookings();
+
 		$handle = fopen("php://output", "w");
 
 		$csv_headers = $EM_Bookings_Table->get_headers(true);
 		fputcsv($handle, $csv_headers, $delimiter);
 
-		// Note the position of the booking spaces column header
-		$booking_spaces_pos = array_search( 'booking_spaces', array_keys( $csv_headers ) );
-
 		while( !empty($EM_Bookings->bookings) ){
+
 			foreach( $EM_Bookings->bookings as $EM_Booking ) { /* @var EM_Booking $EM_Booking */
+
 				//Display all values
 				if( $show_tickets ){
 					foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){ /* @var EM_Ticket_Booking $EM_Ticket_Booking */
@@ -125,9 +117,8 @@ class BookingsExporter {
 						for($i = 1; $i <= $EM_Ticket_Booking->ticket_booking_spaces; $i++ ) {
 							$this->ticket_space_counter = $i;
 							$row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
-							if( $booking_spaces_pos ) {
-								$row[ $booking_spaces_pos ] = 1;
-							}
+							$row['booking_spaces'] = 1;
+
 							fputcsv($handle, $row, $delimiter);
 						}
 						// End custom code
