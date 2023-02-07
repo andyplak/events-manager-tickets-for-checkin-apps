@@ -15,6 +15,7 @@ class BookingsExporter {
 
 		add_filter('em_bookings_table_cols_tickets_template', [$this, 'em_bookings_table_cols_tickets_template']);
 		add_filter('em_bookings_table_rows_col_ticket_qr', [$this, 'em_bookings_table_rows_col_ticket_qr'], 10, 5);
+		add_filter('em_bookings_table_rows_col_woocommerce_order_id', [$this, 'em_bookings_table_rows_col_woocommerce_order_id'], 10, 5);
 	}
 
 	/**
@@ -59,6 +60,16 @@ class BookingsExporter {
 			}
 		}
 
+		return $val;
+	}
+
+	/**
+	 * Ensure Woo Order is not returned as a link when exporting as csv
+	 */
+	public function em_bookings_table_rows_col_woocommerce_order_id($val, $EM_Booking, $EM_Bookings_Table, $format, $object) {
+		if( 'csv' == $format && !empty($EM_Booking->booking_meta['woocommerce']['order_id']) ) {
+			$val = $EM_Booking->booking_meta['woocommerce']['order_id'];
+		}
 		return $val;
 	}
 
