@@ -106,7 +106,8 @@ class TicketGenerator {
 								'name'   => $person->get_name(),
 								'ticket' => $ticket->ticket_name,
 								'date'   => $booking->date()->format('d/m/Y \a\t H:i'),
-								'bk_id'  => $ticket_booking->booking_id
+								'bk_id'  => $ticket_booking->booking_id,
+								'wc_oid' => ( isset( $booking->booking_meta['woocommerce'] ) ? $booking->booking_meta['woocommerce']['order_id'] : null )
 							];
 						}
 					}
@@ -152,7 +153,7 @@ class TicketGenerator {
 					include 'templates/pdf-body.php';
 					$content = ob_get_contents();
 					ob_end_clean();
-
+echo $content;die;
 					$mpdf->WriteHTML($content);
 					#$mpdf->Output();
 

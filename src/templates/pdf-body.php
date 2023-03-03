@@ -8,6 +8,9 @@
     <strong><?php echo $ticket['ticket'] ?></strong><br />
     Purchased date: <?php echo $ticket['date'] ?><br />
     Ticket ID: <?php echo str_replace( $ticket['email'], '', $ticket['qr_str'] ) ?><br />
+    <?php if( $ticket['wc_oid'] ): ?>
+        Order ID: <?php echo $ticket['wc_oid'] ?><br />
+    <?php endif; ?>
     Email: <?php echo $ticket['email'] ?><br />
 </p>
 
