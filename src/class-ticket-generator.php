@@ -96,7 +96,7 @@ class TicketGenerator {
 						for($i = 1; $i <= $ticket_booking->ticket_booking_spaces; $i++ ) {
 
 							$qr_string = $booking->booking_id . '-' . $ticket->ticket_id . '-' .$i;
-							if( $_POST['append_email_qr'] ) {
+							if( isset( $_POST['append_email_qr'] ) && $_POST['append_email_qr'] ) {
 								$qr_string.= ' '.$person->user_email;
 							}
 
