@@ -1,5 +1,5 @@
 <div style="margin: 0 15%">
-    <h2>Hi <?php echo get_user_meta( $user->ID, 'first_name', true ); ?>,</h2>
+    <h2>Hi <?php echo $name ?>,</h2>
     <h2>Here are your <?php echo strip_tags( $event->event_name ) ?> tickets:</h2>
     <style>
     table, th, td {
