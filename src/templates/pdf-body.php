@@ -68,8 +68,8 @@ table, th, td {
     <?php foreach( $display_fields as $key => $label ) : ?>
         <?php if( isset( $ticket['booking_form'][ $key ] ) ) :?>
             <tr>
-                <td><strong>Arrival</strong></td>
-                <td><?php echo $ticket['booking_form']['when_are_you_planning_to_arrive_f'] ?></td>
+                <td><strong><?php echo $label ?></strong></td>
+                <td><?php echo $ticket['booking_form'][$key] ?></td>
             </tr>
         <?php endif; ?>
     <?php endforeach; ?>
