@@ -101,13 +101,14 @@ class TicketGenerator {
 							}
 
 							$person_tickets[ $person->user_email ][] = [
-								'qr_str' => $qr_string,
-								'email'  => $person->user_email,
-								'name'   => $person->get_name(),
-								'ticket' => $ticket->ticket_name,
-								'date'   => $booking->date()->format('d/m/Y \a\t H:i'),
-								'bk_id'  => $ticket_booking->booking_id,
-								'wc_oid' => ( isset( $booking->booking_meta['woocommerce'] ) ? $booking->booking_meta['woocommerce']['order_id'] : null )
+								'qr_str'       => $qr_string,
+								'email'        => $person->user_email,
+								'name'         => $person->get_name(),
+								'ticket'       => $ticket->ticket_name,
+								'date'         => $booking->date()->format('d/m/Y \a\t H:i'),
+								'bk_id'        => $ticket_booking->booking_id,
+								'wc_oid'       => ( isset( $booking->booking_meta['woocommerce'] ) ? $booking->booking_meta['woocommerce']['order_id'] : null ),
+								'booking_form' => $booking->meta['booking']
 							];
 						}
 					}
