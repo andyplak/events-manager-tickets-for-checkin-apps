@@ -27,9 +27,6 @@ table, th, td {
             <tr>
                 <td><strong><?php echo $ticket['ticket'] ?></strong></td>
             </tr>
-        </table>
-
-        <table style="width:100%">
             <tr>
                 <td><strong>Name</strong></td>
                 <td><?php echo $ticket['name'] ?></td>
