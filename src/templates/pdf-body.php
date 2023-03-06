@@ -20,6 +20,11 @@
         </tr>
     </table>
     <br>
+    <br>
+    <div style="text-center">
+        <img src="https://www.quirkycampers.com/uk/wp-content/uploads/2022/11/Untitled-design-8-2.png"/>
+    </div>
+    <br>
 
     <?php foreach( $tickets as $ticket ) : ?>
         <div style="page-break-inside: avoid;">
@@ -67,6 +72,10 @@
                 <?php endif; ?>
             <?php endforeach; ?>
             </table>
+            <br>
+            <div style="text-center">
+                <img src="https://www.quirkycampers.com/uk/wp-content/uploads/2022/11/Untitled-design-8-2.png"/>
+            </div>
         </div>
     <?php endforeach; ?>
 </div>
