@@ -11,7 +11,7 @@
     <table style="width:100%">
         <tr>
             <td style="background-color:#419E8A;">
-                <img src="https://www.quirkycampers.com/uk/wp-content/uploads/2023/02/Camp-Quirky-Logo.png" style="width:150px;height:150px;">
+                <img src="https://www.quirkycampers.com/uk/wp-content/uploads/2023/02/Camp-Quirky-Logo-300x300.png" style="width:150px;height:150px;">
             </td>
             <td>
                 <i><p>Please download and show me on your mobile device on arrival.</p>
