@@ -57,19 +57,21 @@ table, th, td {
         </tr>
     </table>
     <br>
-    <?php _dump( $ticket['reg_fields'] ) ?>
+    <?php
+        $display_fields = [
+            'when_are_you_planning_to_arrive_f' => 'Arrval',
+            'vehicle_length'                    => 'Oversized',
+            'accessibility'                     => 'ACA'
+        ];
+    ?>
     <table style="width:50%">
-        <tr>
-            <td><strong>Arrival</strong></td>
-            <td><?php echo $ticket['booking_form']['comment'] ?></td>
-        </tr>
-        <tr>
-            <td><strong>Oversized</strong></td>
-            <td><?php echo $ticket['booking_form']['vehicle_length'] ?></td>
-        </tr>
-        <tr>
-            <td><strong>ACA</strong></td>
-            <td><?php echo $ticket['booking_form']['accessibility'] ?></td>
-        </tr>
+    <?php foreach( $display_fields as $key => $label ) : ?>
+        <?php if( isset( $ticket['booking_form'][ $key ] ) ) :?>
+            <tr>
+                <td><strong>Arrival</strong></td>
+                <td><?php echo $ticket['booking_form']['when_are_you_planning_to_arrive_f'] ?></td>
+            </tr>
+        <?php endif; ?>
+    <?php endforeach; ?>
     </table>
 <?php endforeach; ?>
