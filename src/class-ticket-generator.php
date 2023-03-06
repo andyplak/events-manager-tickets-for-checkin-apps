@@ -164,7 +164,7 @@ echo $content;die;
 					$mpdf->WriteHTML($content);
 					#$mpdf->Output();
 
-					$pdf_filename = $event->event_slug . '.pdf';
+					$pdf_filename = $event->event_slug . '-tickets.pdf';
 					$pdf_content  = $mpdf->output($pdf_filename, \Mpdf\Output\Destination::STRING_RETURN );
 					$pdf_path     = EM_Mailer::add_email_attachment( $pdf_filename, $pdf_content );
 
