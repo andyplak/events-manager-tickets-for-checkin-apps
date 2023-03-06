@@ -160,7 +160,7 @@ class TicketGenerator {
 					include 'templates/pdf-body.php';
 					$content = ob_get_contents();
 					ob_end_clean();
-echo $content;die;
+
 					$mpdf->WriteHTML($content);
 					#$mpdf->Output();
 
