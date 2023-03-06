@@ -7,7 +7,7 @@ table, th, td {
   padding: 8px;
 }
 </style>
-<table style="width:50%">
+<table style="width:100%">
     <tr>
         <td style="background-color:#419E8A;">
             <img src="https://www.quirkycampers.com/uk/wp-content/uploads/2023/02/Camp-Quirky-Logo.png" style="width:150px;height:150px;">
@@ -23,13 +23,13 @@ table, th, td {
 <?php foreach( $tickets as $ticket ) : ?>
     <hr />
     <br>
-    <table style="width:50%">
+    <table style="width:100%">
         <tr>
             <td><strong><?php echo $ticket['ticket'] ?></strong></td>
         </tr>
     </table>
 
-    <table style="width:50%">
+    <table style="width:100%">
         <tr>
             <td><strong>Name</strong></td>
             <td><?php echo $ticket['name'] ?></td>
@@ -48,15 +48,11 @@ table, th, td {
             <td><strong>Ticket ID</strong></td>
             <td><?php echo str_replace( $ticket['email'], '', $ticket['qr_str'] ) ?></td>
         </tr>
-    </table>
-    <table style="width:50%">
         <tr>
-            <td>
+            <td colspan="2" style="vertical-align:middle; text-align:center;">
                 <img src="<?php echo plugins_url('events-manager-tickets-for-checkin-apps/src/qrcode.php?s=qrl&sf=10&d='.$ticket['qr_str'] ) ?>" />
             </td>
         </tr>
-    </table>
-    <br>
     <?php
         $display_fields = [
             'when_are_you_planning_to_arrive_f' => 'Arrval',
@@ -64,7 +60,6 @@ table, th, td {
             'accessibility'                     => 'ACA'
         ];
     ?>
-    <table style="width:50%">
     <?php foreach( $display_fields as $key => $label ) : ?>
         <?php if( isset( $ticket['booking_form'][ $key ] ) ) :?>
             <tr>
