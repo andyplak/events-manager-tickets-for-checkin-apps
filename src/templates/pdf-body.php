@@ -21,52 +21,53 @@ table, th, td {
 <br>
 
 <?php foreach( $tickets as $ticket ) : ?>
-    <hr />
-    <br>
-    <table style="width:100%">
-        <tr>
-            <td><strong><?php echo $ticket['ticket'] ?></strong></td>
-        </tr>
-    </table>
-
-    <table style="width:100%">
-        <tr>
-            <td><strong>Name</strong></td>
-            <td><?php echo $ticket['name'] ?></td>
-        </tr>
-        <tr>
-            <td><strong>Email</strong></td>
-            <td><?php echo $ticket['email'] ?></td>
-        </tr>
-        <?php if( $ticket['wc_oid'] ): ?>
-        <tr>
-            <td><strong>Order ID</strong></td>
-            <td><?php echo $ticket['wc_oid'] ?></td>
-        </tr>
-        <?php endif; ?>
-        <tr>
-            <td><strong>Ticket ID</strong></td>
-            <td><?php echo str_replace( $ticket['email'], '', $ticket['qr_str'] ) ?></td>
-        </tr>
-        <tr>
-            <td colspan="2" style="vertical-align:middle; text-align:center;">
-                <img src="<?php echo plugins_url('events-manager-tickets-for-checkin-apps/src/qrcode.php?s=qrl&sf=10&d='.$ticket['qr_str'] ) ?>" />
-            </td>
-        </tr>
-    <?php
-        $display_fields = [
-            'when_are_you_planning_to_arrive_f' => 'Arrval',
-            'vehicle_length'                    => 'Oversized',
-            'accessibility'                     => 'ACA'
-        ];
-    ?>
-    <?php foreach( $display_fields as $key => $label ) : ?>
-        <?php if( isset( $ticket['booking_form'][ $key ] ) ) :?>
+    <div style="page-break-inside: avoid;">
+        <br>
+        <table style="width:100%">
             <tr>
-                <td><strong><?php echo $label ?></strong></td>
-                <td><?php echo $ticket['booking_form'][$key] ?></td>
+                <td><strong><?php echo $ticket['ticket'] ?></strong></td>
             </tr>
-        <?php endif; ?>
-    <?php endforeach; ?>
-    </table>
+        </table>
+
+        <table style="width:100%">
+            <tr>
+                <td><strong>Name</strong></td>
+                <td><?php echo $ticket['name'] ?></td>
+            </tr>
+            <tr>
+                <td><strong>Email</strong></td>
+                <td><?php echo $ticket['email'] ?></td>
+            </tr>
+            <?php if( $ticket['wc_oid'] ): ?>
+            <tr>
+                <td><strong>Order ID</strong></td>
+                <td><?php echo $ticket['wc_oid'] ?></td>
+            </tr>
+            <?php endif; ?>
+            <tr>
+                <td><strong>Ticket ID</strong></td>
+                <td><?php echo str_replace( $ticket['email'], '', $ticket['qr_str'] ) ?></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="vertical-align:middle; text-align:center;">
+                    <img src="<?php echo plugins_url('events-manager-tickets-for-checkin-apps/src/qrcode.php?s=qrl&sf=10&d='.$ticket['qr_str'] ) ?>" />
+                </td>
+            </tr>
+        <?php
+            $display_fields = [
+                'when_are_you_planning_to_arrive_f' => 'Arrval',
+                'vehicle_length'                    => 'Oversized',
+                'accessibility'                     => 'ACA'
+            ];
+        ?>
+        <?php foreach( $display_fields as $key => $label ) : ?>
+            <?php if( isset( $ticket['booking_form'][ $key ] ) ) :?>
+                <tr>
+                    <td><strong><?php echo $label ?></strong></td>
+                    <td><?php echo $ticket['booking_form'][$key] ?></td>
+                </tr>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </table>
+    </div>
 <?php endforeach; ?>
