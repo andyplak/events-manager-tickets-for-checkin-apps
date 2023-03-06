@@ -164,7 +164,8 @@ class TicketGenerator {
 					$mpdf->WriteHTML($content);
 					#$mpdf->Output();
 
-					$pdf_filename = $event->event_slug . '-tickets-'.uniqid().'.pdf';
+					$pdf_filename = str_replace(' ', '-',$event->event_mame);
+					$pdf_filename .= '-tickets-'.uniqid().'.pdf';
 					$pdf_content  = $mpdf->output($pdf_filename, \Mpdf\Output\Destination::STRING_RETURN );
 					$pdf_path     = EM_Mailer::add_email_attachment( $pdf_filename, $pdf_content );
 
