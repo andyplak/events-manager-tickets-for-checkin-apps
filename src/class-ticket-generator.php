@@ -136,7 +136,13 @@ class TicketGenerator {
 
 				foreach( $person_tickets as $email => $tickets ) {
 
-					$user    = get_user_by( 'email', $email );
+					$user = get_user_by( 'email', $email );
+					if($user) {
+						$name = get_user_meta( $user->ID, 'first_name', true );
+					}else{
+						$name = $tickets[0]['name'];
+					}
+
 					$subject = $_POST['subject'];
 					$mpdf    = new \Mpdf\Mpdf(['debug' => true]); // Debug true so we get a warning instead of an empty pdf in the case of issues
 
