@@ -26,7 +26,7 @@
             <br>
             <table style="width:100%">
                 <tr>
-                    <td><strong><?php echo $ticket['ticket'] ?></strong></td>
+                    <td colspan="2" style="text-align:center;"><strong><?php echo $ticket['ticket'] ?></strong></td>
                 </tr>
                 <tr>
                     <td><strong>Name</strong></td>
@@ -47,7 +47,7 @@
                     <td><?php echo str_replace( $ticket['email'], '', $ticket['qr_str'] ) ?></td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="vertical-align:middle; text-align:center;">
+                    <td colspan="2" style="text-align:center;">
                         <img src="<?php echo plugins_url('events-manager-tickets-for-checkin-apps/src/qrcode.php?s=qrl&sf=10&d='.$ticket['qr_str'] ) ?>" />
                     </td>
                 </tr>
