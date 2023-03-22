@@ -56,7 +56,7 @@
                 </tr>
             <?php
                 $display_fields = [
-                    'when_are_you_planning_to_arrive_f' => 'Arrval',
+                    'when_are_you_planning_to_arrive_f' => 'Arrival',
                     'vehicle_length'                    => 'Oversized',
                     'accessibility'                     => 'ACA'
                 ];
