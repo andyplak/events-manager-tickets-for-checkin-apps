@@ -108,7 +108,7 @@ class TicketGenerator {
 								'date'         => $booking->date()->format('d/m/Y \a\t H:i'),
 								'bk_id'        => $ticket_booking->booking_id,
 								'wc_oid'       => ( isset( $booking->booking_meta['woocommerce'] ) ? $booking->booking_meta['woocommerce']['order_id'] : null ),
-								'booking_form' => $booking->meta['booking']
+								'booking_form' => ( isset( $booking->booking_meta['booking'] ) ? $booking->meta['booking'] : null ),
 							];
 						}
 					}
