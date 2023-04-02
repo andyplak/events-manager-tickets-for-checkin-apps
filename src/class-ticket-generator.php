@@ -137,74 +137,77 @@ class TicketGenerator {
 
 				foreach( $person_tickets as $email => $tickets ) {
 
-					$user = get_user_by( 'email', $email );
-					if($user) {
-						$this->current_iteration_user_firstname = get_user_meta( $user->ID, 'first_name', true );
-					}else{
-						$this->current_iteration_user_firstname = $tickets[0]['name'];
-					}
-
-					$subject = $_POST['subject'];
-					$mpdf    = new \Mpdf\Mpdf(['debug' => true]); // Debug true so we get a warning instead of an empty pdf in the case of issues
-
-					if( !$subject ) {
-						$subject = strip_tags( $event->event_name );
-						$subject.= ' '.__('for', 'events-manager-checkin-tickets').' ';
-						$subject.= $this->current_iteration_user_firstname;
-					}
-
-					// Store tickets for use in event->output filters
-					$this->current_tickets = $tickets;
-					$body = $event->output( $message );
-
-					ob_start();
-					include 'templates/pdf-body.php';
-					$content = ob_get_contents();
-					ob_end_clean();
-
-					$mpdf->WriteHTML($content);
-					#$mpdf->Output();
-
-					$pdf_filename = str_replace(' ', '-',$event->event_name);
-					$pdf_filename .= '-'.uniqid().'.pdf';
-					$pdf_content  = $mpdf->output($pdf_filename, \Mpdf\Output\Destination::STRING_RETURN );
-					$pdf_path     = EM_Mailer::add_email_attachment( $pdf_filename, $pdf_content );
-
-					// EM Mailer in compatible with Post SMTP plugin
-					#$attachment   = [
-					#	'name'   => 'EventTickets.pdf',
-					#	'type'   => 'application/pdf',
-					#	'path'   => $pdf_path,
-					#	'delete' => true
-					#];
-					#
-					#$sent = $EM_Mailer->send( $subject, $body, $email, [ $attachment ] );
-
-					// Use WP Mail instead
-					$headers = ['Content-Type: text/html; charset=UTF-8'];
-					$sent = wp_mail( $email, $subject, $body, $headers, [ $pdf_path ] );
-
-					$notice_class = $sent ? 'notice-success' : 'notice-error';
-					echo '<div class="notice '.$notice_class.'">'.$email.'</div>';
-
-					if( $sent ) {
-						// Log time sent against the original booking
-						$bookings_email_sent = [];
-
-						foreach( $tickets as $ticket ) {
-							$bookings_email_sent[] = $ticket['bk_id'];
+					if( $email ) {
+						$user = get_user_by( 'email', $email );
+						if($user) {
+							$name = get_user_meta( $user->ID, 'first_name', true );
+						}else{
+							$name = $tickets[0]['name'];
 						}
-						$bookings_email_sent = array_unique( $bookings_email_sent, SORT_NUMERIC );
+						$this->current_iteration_user_firstname = $name;
 
-						foreach( $bookings_email_sent as $booking_id ) {
-							$em_booking = new EM_Booking( $booking_id );
-							$em_booking->update_meta( 'tickets_emailed', date('U') );
+						$subject = $_POST['subject'];
+						$mpdf    = new \Mpdf\Mpdf(['debug' => true]); // Debug true so we get a warning instead of an empty pdf in the case of issues
+
+						if( !$subject ) {
+							$subject = strip_tags( $event->event_name );
+							$subject.= ' '.__('for', 'events-manager-checkin-tickets').' ';
+							$subject.= $name;
 						}
-					}
 
-					$i++;
-					if( $i == $batch_qty ) {
-						break;
+						// Store tickets for use in event->output filters
+						$this->current_tickets = $tickets;
+						$body = $event->output( $message );
+
+						ob_start();
+						include 'templates/pdf-body.php';
+						$content = ob_get_contents();
+						ob_end_clean();
+
+						$mpdf->WriteHTML($content);
+						#$mpdf->Output();
+
+						$pdf_filename = str_replace(' ', '-',$event->event_name);
+						$pdf_filename .= '-'.uniqid().'.pdf';
+						$pdf_content  = $mpdf->output($pdf_filename, \Mpdf\Output\Destination::STRING_RETURN );
+						$pdf_path     = EM_Mailer::add_email_attachment( $pdf_filename, $pdf_content );
+
+						// EM Mailer in compatible with Post SMTP plugin
+						#$attachment   = [
+						#	'name'   => 'EventTickets.pdf',
+						#	'type'   => 'application/pdf',
+						#	'path'   => $pdf_path,
+						#	'delete' => true
+						#];
+						#
+						#$sent = $EM_Mailer->send( $subject, $body, $email, [ $attachment ] );
+
+						// Use WP Mail instead
+						$headers = ['Content-Type: text/html; charset=UTF-8'];
+						$sent = wp_mail( $email, $subject, $body, $headers, [ $pdf_path ] );
+
+						$notice_class = $sent ? 'notice-success' : 'notice-error';
+						echo '<div class="notice '.$notice_class.'">'.$email.'</div>';
+
+						if( $sent ) {
+							// Log time sent against the original booking
+							$bookings_email_sent = [];
+
+							foreach( $tickets as $ticket ) {
+								$bookings_email_sent[] = $ticket['bk_id'];
+							}
+							$bookings_email_sent = array_unique( $bookings_email_sent, SORT_NUMERIC );
+
+							foreach( $bookings_email_sent as $booking_id ) {
+								$em_booking = new EM_Booking( $booking_id );
+								$em_booking->update_meta( 'tickets_emailed', date('U') );
+							}
+						}
+
+						$i++;
+						if( $i == $batch_qty ) {
+							break;
+						}
 					}
 				}
 
