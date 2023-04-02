@@ -3,6 +3,7 @@
 class TicketGenerator {
 
 	private $current_tickets;
+	private $current_iteration_user_firstname;
 
 	public function __construct() {
 		add_action( 'admin_menu', [$this, 'onAdminMenu'], 90 );
@@ -138,9 +139,9 @@ class TicketGenerator {
 
 					$user = get_user_by( 'email', $email );
 					if($user) {
-						$name = get_user_meta( $user->ID, 'first_name', true );
+						$this->current_iteration_user_firstname = get_user_meta( $user->ID, 'first_name', true );
 					}else{
-						$name = $tickets[0]['name'];
+						$this->current_iteration_user_firstname = $tickets[0]['name'];
 					}
 
 					$subject = $_POST['subject'];
@@ -149,7 +150,7 @@ class TicketGenerator {
 					if( !$subject ) {
 						$subject = strip_tags( $event->event_name );
 						$subject.= ' '.__('for', 'events-manager-checkin-tickets').' ';
-						$subject.= $user->first_name;
+						$subject.= $this->current_iteration_user_firstname;
 					}
 
 					// Store tickets for use in event->output filters
@@ -291,8 +292,7 @@ class TicketGenerator {
 
 		switch( $full_result ) {
 			case '#_BOOKINGFIRSTNAME' :
-				$user = get_user_by('email', $this->current_tickets[0]['email'] );
-				$replace = $user->first_name;
+				$replace = $this->current_iteration_user_firstname;
 				break;
 			case '#_TICKETBREAKDOWN' :
 				if( $target == 'html' ) {
